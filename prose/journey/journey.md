@@ -2,7 +2,7 @@
 title: Journey
 author: Pasqually
 meta: Poem
-description: A short poem about a solitary desert journey, two strangers with an incomprehensible song, and finally understanding it.
+description: A short poem about a (mostly) solitary desert journey.
 ---
 
 you don a guise, a shield from wind and sun,\
