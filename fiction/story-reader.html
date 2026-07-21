@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loading… — atlas | writes</title>
+  <link rel="stylesheet" href="../assets/style.css">
+  <style>
+    .loading-msg {
+      text-align: center;
+      padding: 4rem 1rem;
+      color: #888;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <main class="reading-page">
+
+    <a href="../fiction.html" class="reading-back">&larr; Back to fiction</a>
+
+    <div id="story-header"></div>
+    <hr class="reading-divider">
+
+    <div id="story-content" class="reading-body">
+      <p class="loading-msg">Loading story…</p>
+    </div>
+
+    <div id="story-footer"></div>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked@14/marked.min.js"></script>
+  <script>
+    (async () => {
+      const slug = new URLSearchParams(location.search).get('s');
+      if (!slug) {
+        document.getElementById('story-content').innerHTML =
+          '<p class="loading-msg">No story specified.</p>';
+        return;
+      }
+
+      /* ── Fetch the .md file ── */
+      let raw;
+      try {
+        const res = await fetch(`${slug}.md`);
+        if (!res.ok) throw new Error(res.status);
+        raw = await res.text();
+      } catch (e) {
+        document.getElementById('story-content').innerHTML =
+          '<p class="loading-msg">Story not found.</p>';
+        return;
+      }
+
+      /* ── Parse frontmatter ── */
+      let meta = {};
+      let body = raw;
+      if (raw.startsWith('---')) {
+        const end = raw.indexOf('---', 3);
+        if (end !== -1) {
+          const fm = raw.slice(3, end).trim();
+          fm.split('\n').forEach(line => {
+            const i = line.indexOf(':');
+            if (i > 0) meta[line.slice(0, i).trim()] = line.slice(i + 1).trim();
+          });
+          body = raw.slice(end + 3).trim();
+        }
+      }
+
+      /* ── Set page title & header ── */
+      const title = meta.title || slug;
+      document.title = `${title} — atlas | writes`;
+
+      if (meta.description) {
+        const desc = document.createElement('meta');
+        desc.name = 'description';
+        desc.content = meta.description;
+        document.head.appendChild(desc);
+      }
+
+      document.getElementById('story-header').innerHTML = `
+        <h1 class="reading-title">${title}</h1>
+        ${meta.author ? `<p class="reading-author">by ${meta.author}</p>` : ''}
+        ${meta.meta   ? `<p class="reading-meta">${meta.meta}</p>` : ''}
+      `;
+
+      /* ── Custom marked renderer ── */
+      const renderer = new marked.Renderer();
+
+      // ## Part X  →  part header
+      // ### 1      →  chapter number
+      renderer.heading = function({ text, depth }) {
+        if (depth === 2) return `<p class="reading-part-header">${text}</p>\n`;
+        if (depth === 3) return `<p class="reading-chapter">${text}</p>\n`;
+        return `<h${depth}>${text}</h${depth}>\n`;
+      };
+
+      // ---  →  scene break dots (not <hr>)
+      renderer.hr = function() {
+        return '<p class="reading-break">&middot; &middot; &middot;</p>\n';
+      };
+
+      marked.setOptions({ renderer, breaks: false, gfm: true });
+
+      /* ── Render ── */
+      document.getElementById('story-content').innerHTML = marked.parse(body);
+
+      /* ── Footer ── */
+      let footer = '<hr class="reading-divider" style="margin-top: 3rem;">';
+      footer += '<a href="../fiction.html" class="reading-back">&larr; Back to fiction</a>';
+      if (meta.royal_road) {
+        footer += `<p class="reading-royal-road">Also available on <a href="${meta.royal_road}" target="_blank" rel="noopener noreferrer">Royal Road</a></p>`;
+      }
+      document.getElementById('story-footer').innerHTML = footer;
+    })();
+  </script>
+</body>
+</html>
