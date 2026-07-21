@@ -3,21 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Loading… — atlas | writes</title>
-  <link rel="stylesheet" href="../assets/style.css">
-  <style>
-    .loading-msg {
-      text-align: center;
-      padding: 4rem 1rem;
-      color: #888;
-      font-style: italic;
-    }
-  </style>
+  <title>The Perfect Heist — atlas | writes</title>
+  <meta name="description" content="Five years after walking out of the Accord, the criminal organization nobody walks out of, he's back in Merranth with a bag of stolen trinkets, a frozen debt, and a scheme to rob the Pendleton vault during the Royal Procession. He needs a crew. An old partner who hasn't worked in a decade. A woman who's smarter than him and won't let him forget it. And the backing of the most dangerous man in Merranth, who wants something in return that Tav isn't ready to give.">
+  <meta property="og:title" content="The Perfect Heist">
+  <meta property="og:description" content="Five years after walking out of the Accord, the criminal organization nobody walks out of, he's back in Merranth with a bag of stolen trinkets, a frozen debt, and a scheme to rob the Pendleton vault during the Royal Procession. He needs a crew. An old partner who hasn't worked in a decade. A woman who's smarter than him and won't let him forget it. And the backing of the most dangerous man in Merranth, who wants something in return that Tav isn't ready to give.">
+  <meta property="og:url" content="https://atlaswrites.com/fiction/the-perfect-heist/">
+  <meta property="og:type" content="article">
+  <link rel="stylesheet" href="../../assets/style.css">
 </head>
 <body>
+
+  <nav class="site-nav" aria-label="Site navigation">
+    <a href="../../" class="site-nav-brand">atlas | writes</a>
+    <ul class="site-nav-links">
+      <li><a href="../../fiction.html" class="active">Fiction</a></li>
+      <li aria-hidden="true" class="site-nav-dot">&middot;</li>
+      <li><a href="../../prose.html">Prose</a></li>
+      <li aria-hidden="true" class="site-nav-dot">&middot;</li>
+      <li><a href="../../comics.html">Comics</a></li>
+      <li aria-hidden="true" class="site-nav-dot">&middot;</li>
+      <li><a href="../../contact.html">Contact</a></li>
+    </ul>
+  </nav>
+
   <main class="reading-page">
 
-    <a href="../fiction.html" class="reading-back">&larr; Back to fiction</a>
+    <a href="../../fiction.html" class="reading-back">&larr; Back to fiction</a>
 
     <div id="story-header"></div>
     <hr class="reading-divider">
@@ -33,17 +44,10 @@
   <script src="https://cdn.jsdelivr.net/npm/marked@14/marked.min.js"></script>
   <script>
     (async () => {
-      const slug = new URLSearchParams(location.search).get('s');
-      if (!slug) {
-        document.getElementById('story-content').innerHTML =
-          '<p class="loading-msg">No story specified.</p>';
-        return;
-      }
-
       /* ── Fetch the .md file ── */
       let raw;
       try {
-        const res = await fetch(`${slug}.md`);
+        const res = await fetch('../the-perfect-heist.md');
         if (!res.ok) throw new Error(res.status);
         raw = await res.text();
       } catch (e) {
@@ -67,16 +71,8 @@
         }
       }
 
-      /* ── Set page title & header ── */
-      const title = meta.title || slug;
-      document.title = `${title} — atlas | writes`;
-
-      if (meta.description) {
-        const desc = document.createElement('meta');
-        desc.name = 'description';
-        desc.content = meta.description;
-        document.head.appendChild(desc);
-      }
+      /* ── Set header ── */
+      const title = meta.title || 'The Perfect Heist';
 
       document.getElementById('story-header').innerHTML = `
         <h1 class="reading-title">${title}</h1>
@@ -107,7 +103,7 @@
 
       /* ── Footer ── */
       let footer = '<hr class="reading-divider" style="margin-top: 3rem;">';
-      footer += '<a href="../fiction.html" class="reading-back">&larr; Back to fiction</a>';
+      footer += '<a href="../../fiction.html" class="reading-back">&larr; Back to fiction</a>';
       if (meta.royal_road) {
         footer += `<p class="reading-royal-road">Also available on <a href="${meta.royal_road}" target="_blank" rel="noopener noreferrer">Royal Road</a></p>`;
       }
