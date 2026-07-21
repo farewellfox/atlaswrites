@@ -383,6 +383,12 @@ a:hover {
   font-size: 14px;
 }
 
+/* ─── POEM STYLING ───────────────────────────────────────────────── */
+.reading-body--poem p {
+  text-align: center;
+  font-style: italic;
+}
+
 /* ─── STORY AUTHOR (card) ────────────────────────────────────────── */
 .story-author {
   font-family: var(--font-body);

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Journey — atlas | writes</title>
+  <meta name="description" content="A short poem about a solitary desert journey, two strangers with an incomprehensible song, and finally understanding it.">
+  <meta property="og:title" content="Journey">
+  <meta property="og:description" content="A short poem about a (mostly) solitary journey in the desert.">
+  <meta property="og:url" content="https://atlaswrites.com/prose/journey/">
+  <meta property="og:type" content="article">
+  <link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+
+  <nav class="site-nav" aria-label="Site navigation">
+    <a href="/" class="site-nav-brand">atlas | writes</a>
+    <ul class="site-nav-links">
+      <li><a href="/fiction/">Fiction</a></li>
+      <li aria-hidden="true" class="site-nav-dot">&middot;</li>
+      <li><a href="/prose/" class="active">Prose</a></li>
+      <li aria-hidden="true" class="site-nav-dot">&middot;</li>
+      <li><a href="/comics/">Comics</a></li>
+      <li aria-hidden="true" class="site-nav-dot">&middot;</li>
+      <li><a href="/contact/">Contact</a></li>
+    </ul>
+  </nav>
+
+  <main class="reading-page">
+
+    <a href="/prose/" class="reading-back">&larr; Back to prose</a>
+
+    <div id="story-header"></div>
+    <hr class="reading-divider">
+
+    <div id="story-content" class="reading-body reading-body--poem">
+      <p class="loading-msg">Loading poem…</p>
+    </div>
+
+    <div id="story-footer"></div>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked@14/marked.min.js"></script>
+  <script>
+    (async () => {
+      /* ── Fetch the .md file ── */
+      let raw;
+      try {
+        const res = await fetch('./journey.md');
+        if (!res.ok) throw new Error(res.status);
+        raw = await res.text();
+      } catch (e) {
+        document.getElementById('story-content').innerHTML =
+          '<p class="loading-msg">Poem not found.</p>';
+        return;
+      }
+
+      /* ── Parse frontmatter ── */
+      let meta = {};
+      let body = raw;
+      if (raw.startsWith('---')) {
+        const end = raw.indexOf('---', 3);
+        if (end !== -1) {
+          const fm = raw.slice(3, end).trim();
+          fm.split('\n').forEach(line => {
+            const i = line.indexOf(':');
+            if (i > 0) meta[line.slice(0, i).trim()] = line.slice(i + 1).trim();
+          });
+          body = raw.slice(end + 3).trim();
+        }
+      }
+
+      /* ── Set header ── */
+      const title = meta.title || 'Journey';
+
+      document.getElementById('story-header').innerHTML = `
+        <h1 class="reading-title">${title}</h1>
+        ${meta.author ? `<p class="reading-author">by ${meta.author}</p>` : ''}
+        ${meta.meta   ? `<p class="reading-meta">${meta.meta}</p>` : ''}
+      `;
+
+      /* ── Custom marked renderer ── */
+      const renderer = new marked.Renderer();
+
+      // # Section  →  section label (e.g. "Poem" / "Song"), for pieces with multiple parts
+      renderer.heading = function({ text, depth }) {
+        if (depth === 1) return `<p class="reading-part-header">${text}</p>\n`;
+        return `<h${depth}>${text}</h${depth}>\n`;
+      };
+
+      // ---  →  scene break dots (not <hr>)
+      renderer.hr = function() {
+        return '<p class="reading-break">&middot; &middot; &middot;</p>\n';
+      };
+
+      marked.setOptions({ renderer, breaks: false, gfm: true });
+
+      /* ── Render ── */
+      document.getElementById('story-content').innerHTML = marked.parse(body);
+
+      /* ── Footer ── */
+      let footer = '<hr class="reading-divider" style="margin-top: 3rem;">';
+      footer += '<a href="/prose/" class="reading-back">&larr; Back to prose</a>';
+      document.getElementById('story-footer').innerHTML = footer;
+    })();
+  </script>
+</body>
+</html>
