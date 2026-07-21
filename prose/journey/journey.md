@@ -1,7 +1,7 @@
 ---
 title: Journey
 author: Pasqually
-meta: Poem
+meta: Poem · April 2026
 description: A short poem about a (mostly) solitary desert journey.
 ---
 

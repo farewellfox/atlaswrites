@@ -1,7 +1,7 @@
 ---
 title: The Perfect Heist
 author: Pasqually
-meta: Fantasy · Heist · 61 pages
+meta: Fantasy · Heist · 24,000 words · July 2026
 description: The Perfect Heist by Pasqually.
 ---
 
