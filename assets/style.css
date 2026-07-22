@@ -407,6 +407,14 @@ a:hover {
   margin-bottom: 0.35rem;
 }
 
+.reading-note {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--accent);
+  text-align: center;
+  margin: -0.5rem 0 1.5rem;
+}
+
 .reading-part-header {
   font-family: var(--font-heading);
   font-size: 13px;
