@@ -209,6 +209,41 @@ a:hover {
   margin-bottom: 2rem;
 }
 
+.page-header-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.page-header-row .page-title {
+  margin-bottom: 0;
+}
+
+.series-description {
+  margin-bottom: 2.5rem;
+}
+
+.series-description p {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-style: italic;
+  color: var(--secondary-text);
+  line-height: 1.85;
+}
+
+.series-description p + p {
+  margin-top: 1.25rem;
+}
+
+.series-description .series-tagline {
+  margin-top: 2.5rem;
+  font-size: 19px;
+  font-style: normal;
+  color: var(--accent);
+  letter-spacing: 0.02em;
+}
+
 /* ─── STORY CARD ─────────────────────────────────────────────────── */
 .story-card {
   background: var(--off-white);
