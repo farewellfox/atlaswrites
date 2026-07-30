@@ -167,8 +167,7 @@ wagon by imaginary wagon. A train whose only cargo was the lie, routed
 through Maladzyechna, a junction east of Minsk that half the freight in
 Belarus passes through sooner or later. Then back through Wren, back
 through the embassy channel: *Client requests confirmation of routing
-for Consist 4471-K, reported transiting Maladzyechna on the
-14\<sup\>th\</sup\>.*
+for Consist 4471-K, reported transiting Maladzyechna on the 14th.
 
 It was four days before Tallow answered. Wren routed it back word for
 word, dropping the insurance lingo:
