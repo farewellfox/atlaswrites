@@ -221,15 +221,18 @@ a:hover {
 }
 
 .series-description {
-  margin-bottom: 2.5rem;
+  max-width: 550px;
+  margin: 0 auto 2.5rem;
+  text-align: center;
 }
 
 .series-description p {
   font-family: var(--font-body);
   font-size: 14px;
-  font-style: italic;
+  font-style: normal;
+  font-weight: 400;
   color: var(--secondary-text);
-  line-height: 1.85;
+  line-height: 1.8;
 }
 
 .series-description p + p {
@@ -238,10 +241,6 @@ a:hover {
 
 .series-description .series-tagline {
   margin-top: 2.5rem;
-  font-size: 19px;
-  font-style: normal;
-  color: var(--accent);
-  letter-spacing: 0.02em;
 }
 
 /* ─── STORY CARD ─────────────────────────────────────────────────── */
