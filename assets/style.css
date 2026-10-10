@@ -273,18 +273,18 @@ h3.entry-title { font-size: 1.5rem; }
 .story-end { margin-top: 3.5rem; padding-top: 1.5rem; border-top: 1px solid var(--faint); color: var(--pencil); }
 .story-end p { margin: .4rem 0; }
 
+.about-text { padding-top: 1.6rem; padding-bottom: 1.1rem; }
 .about-text > p:first-child {
-  font-size: clamp(1.45rem, 3vw, 1.85rem); font-style: italic; font-weight: 400; line-height: 1.3;
-  letter-spacing: -0.01em; margin: 0 0 1.4rem; text-wrap: balance; font-variation-settings: "opsz" 48;
+  font-size: clamp(1.35rem, 2.6vw, 1.65rem); font-style: italic; font-weight: 400; line-height: 1.3;
+  letter-spacing: -0.01em; margin: 0 0 1.1rem; text-wrap: balance; font-variation-settings: "opsz" 48;
 }
-.about-text p { margin: 0 0 1em; font-size: 1.125rem; line-height: 1.7; }
-.contact-lead { margin: .2rem 0 .9rem; font-size: 1.125rem; }
-.contact-email { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1rem; margin: 0 0 1.75rem; }
-.contact-email a { font-size: clamp(1.2rem, 3vw, 1.5rem); font-weight: 500; color: var(--ink); text-decoration-color: var(--margin); text-decoration-thickness: 2px; text-underline-offset: .25em; overflow-wrap: anywhere; }
-.copy-btn { background: none; border: 1px solid var(--faint); border-radius: 4px; padding: .35rem .75rem; min-height: 2.25rem; color: var(--pencil); cursor: pointer; font-size: .9rem; }
+.about-text p { margin: 0 0 .9em; font-size: 1.075rem; line-height: 1.7; }
+.toc-list > .toc-item--static:hover { background: none; }
+.contact-lead { margin: 0 0 .7rem; }
+.contact-email { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; margin: 0; }
+.contact-email a { font-size: 1.3rem; font-weight: 600; color: var(--ink); text-decoration-color: var(--margin); text-decoration-thickness: 2px; text-underline-offset: .25em; overflow-wrap: anywhere; }
+.copy-btn { background: none; border: 1px solid var(--card-edge); border-radius: 6px; padding: .3rem .7rem; min-height: 2.1rem; color: var(--pencil); cursor: pointer; font-size: .875rem; }
 .copy-btn:hover { color: var(--ink); border-color: var(--pencil); }
-.elsewhere { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .5rem; font-size: 1.05rem; }
-.elsewhere span { color: var(--pencil); }
 
 .footer > .m, .footer > .t { padding-top: 2rem; padding-bottom: 2.5rem; }
 .footer > .t { display: flex; flex-wrap: wrap; gap: .5rem 1.4rem; font-size: .925rem; border-top: 0; }

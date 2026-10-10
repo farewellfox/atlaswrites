@@ -616,13 +616,16 @@ def page_about() -> str:
                              capture_output=True, text=True)
         body = smart_html(res.stdout)
     email, rr = esc(SITE.get("email")), esc(SITE.get("royal_road"))
-    contact = (f'<p class="contact-lead">Questions, notes on a story, or an artist interested in Undercity Crown? Email me.</p>'
+    contact = (f'<ul class="toc-list contact-list">'
+               f'<li class="toc-item toc-item--static"><p class="contact-lead">Questions, notes on a story, or an artist interested in Undercity Crown? Email me.</p>'
                f'<p class="contact-email"><a href="mailto:{email}">{email}</a>'
-               f'<button type="button" class="copy-btn" data-copy="{email}">Copy address</button></p>'
-               f'<ul class="elsewhere"><li><a href="{rr}" rel="noopener">Royal Road</a> <span>more fiction</span></li>'
-               f'<li><a href="/feed.xml">RSS feed</a> <span>new stories as they go up</span></li></ul>')
-    main = (row('<h1 class="side-label side-label--page">About</h1>', f'<div class="about-text">{body}</div>', "page-row")
-            + row('<h2 class="side-label side-label--page" id="contact">Get in touch</h2>', contact, "page-row"))
+               f'<button type="button" class="copy-btn" data-copy="{email}">Copy address</button></p></li>'
+               f'<li class="toc-item"><a class="toc-title" href="{rr}" rel="noopener">Royal Road</a>'
+               f'<p class="toc-meta"><span>More of my fiction</span></p></li>'
+               f'<li class="toc-item"><a class="toc-title" href="/feed.xml">RSS feed</a>'
+               f'<p class="toc-meta"><span>New stories as they go up</span></p></li></ul>')
+    main = (row('<h1 class="side-label">About</h1>', f'<div class="entry about-text">{body}</div>', "contents-row")
+            + row('<h2 class="side-label" id="contact">Get in touch</h2>', contact, "contents-row"))
     return layout(title="About", desc="About Atlas, who writes noir, spy fiction, fantasy and comics. Get in touch by email.",
                   path="/about/", main=main, current="/about/")
 
