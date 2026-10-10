@@ -357,6 +357,19 @@ body:not(.reading) .progress { display: none; }
   .contents-row > .m .side-label, .page-row > .m .side-label--page { padding-top: .5rem; }
   .nav { font-size: 1.05rem; gap: .1rem 1.2rem; }
   .masthead--home .nav { font-size: 1.1rem; }
+
+  /* Phone header: one continuous line down the left edge; the brand keeps a short red bar between its words */
+  .masthead, .masthead--home { grid-template-columns: auto minmax(0, 1fr); border-left: var(--line) solid var(--margin); padding-left: var(--gap); column-gap: 0; }
+  .masthead > .t { display: contents; }
+  .masthead > .m { grid-column: 1; grid-row: 1; padding: 1.3rem 0 0; display: flex; align-items: baseline; }
+  .masthead .brand-line { grid-column: 2; grid-row: 1; padding: 1.3rem 0 0; }
+  .masthead--home > .m, .masthead--home .brand-line { padding-top: 2.2rem; }
+  .masthead > .m::after { content: ""; align-self: stretch; width: var(--line); background: var(--margin); margin: .25em .5em .1em; }
+  .masthead .nav { grid-column: 1 / -1; grid-row: 2; padding: .9rem 0 1.1rem; margin: 0; gap: .1rem 1.1rem; }
+  .masthead--home .nav { padding: 1.4rem 0 1.6rem; }
+  .masthead--home .tagline { margin-top: .1rem; }
+  .theme-toggle { margin-left: auto; }
+  .theme-toggle .tt-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 }
 
 @media print {
