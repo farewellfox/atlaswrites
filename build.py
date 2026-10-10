@@ -418,8 +418,6 @@ def layout(*, title: str, desc: str, path: str, main: str, current: str = "",
     nav = "".join(f'<a href="{u}"{here if u == current else ""}>{n}</a>' for n, u in NAV)
     brand_size = " masthead--home" if home else ""
     tagline = f'<p class="tagline">{esc(SITE.get("tagline"))}</p>' if home else ""
-    mark = ('<img class="mark" src="/assets/inkbottle.png" alt="" width="56" height="56">'
-            if home else "")
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -449,7 +447,7 @@ def layout(*, title: str, desc: str, path: str, main: str, current: str = "",
 <div class="progress" aria-hidden="true"><span></span></div>
 <div class="frame">
 <header class="row masthead{brand_size}">
-  <div class="m">{mark}<a class="brand brand-a" href="/" aria-label="atlas writes, home">atlas</a></div>
+  <div class="m"><a class="brand brand-a" href="/" aria-label="atlas writes, home">atlas</a></div>
   <div class="t">
     <div class="brand-line"><a class="brand brand-w" href="/" tabindex="-1" aria-hidden="true">writes</a>{tagline}</div>
     <nav class="nav" aria-label="Main">{nav}<button class="theme-toggle" type="button" aria-pressed="false" aria-label="Switch to dark theme">{ICON_THEME}<span class="tt-label">Dark</span></button></nav>
@@ -459,7 +457,7 @@ def layout(*, title: str, desc: str, path: str, main: str, current: str = "",
 {main}
 </main>
 <footer class="row footer">
-  <div class="m"></div>
+  <div class="m"><img class="mark" src="/assets/inkbottle.png" alt="" width="28" height="28"></div>
   <div class="t"><a href="mailto:{esc(SITE.get('email'))}">Email</a><a href="{esc(SITE.get('royal_road'))}" rel="noopener">Royal Road</a><a href="/feed.xml">RSS feed</a></div>
 </footer>
 <div class="row fill" aria-hidden="true"><div class="m"></div><div class="t"></div></div>
