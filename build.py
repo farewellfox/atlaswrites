@@ -409,7 +409,7 @@ ICON_THEME = ('<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true
 
 def layout(*, title: str, desc: str, path: str, main: str, current: str = "",
            og_type: str = "website", image: str | None = None, home: bool = False,
-           body_class: str = "") -> str:
+           body_class: str = "", footer_links: bool = True) -> str:
     base = SITE["url"].rstrip("/")
     full_title = SITE["title"] if home else f"{title} – {SITE['title']}"
     img = image or "/assets/inkbottle.png"
@@ -418,6 +418,8 @@ def layout(*, title: str, desc: str, path: str, main: str, current: str = "",
     nav = "".join(f'<a href="{u}"{here if u == current else ""}>{n}</a>' for n, u in NAV)
     brand_size = " masthead--home" if home else ""
     tagline = f'<p class="tagline">{esc(SITE.get("tagline"))}</p>' if home else ""
+    links = (f'<a href="mailto:{esc(SITE.get("email"))}">Email</a><a href="{esc(SITE.get("royal_road"))}" rel="noopener">Royal Road</a>'
+             f'<a href="/feed.xml">RSS feed</a>') if footer_links else ""
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -458,7 +460,7 @@ def layout(*, title: str, desc: str, path: str, main: str, current: str = "",
 </main>
 <footer class="row footer">
   <div class="m"><img class="mark" src="/assets/inkbottle.png" alt="" width="28" height="28"></div>
-  <div class="t"><a href="mailto:{esc(SITE.get('email'))}">Email</a><a href="{esc(SITE.get('royal_road'))}" rel="noopener">Royal Road</a><a href="/feed.xml">RSS feed</a></div>
+  <div class="t">{links}</div>
 </footer>
 <div class="row fill" aria-hidden="true"><div class="m"></div><div class="t"></div></div>
 </div>
@@ -617,7 +619,7 @@ def page_about() -> str:
         body = smart_html(res.stdout)
     email, rr = esc(SITE.get("email")), esc(SITE.get("royal_road"))
     contact = (f'<ul class="toc-list contact-list">'
-               f'<li class="toc-item toc-item--static"><p class="contact-lead">Questions, notes on a story, or an artist interested in Undercity Crown? Email me.</p>'
+               f'<li class="toc-item toc-item--static"><p class="contact-lead">Questions or notes on a story? An artist interested in Undercity Crown? Email me.</p>'
                f'<p class="contact-email"><a href="mailto:{email}">{email}</a>'
                f'<button type="button" class="copy-btn" data-copy="{email}">Copy address</button></p></li>'
                f'<li class="toc-item"><a class="toc-title" href="{rr}" rel="noopener">Royal Road</a>'
@@ -627,7 +629,7 @@ def page_about() -> str:
     main = (row('<h1 class="side-label">About</h1>', f'<div class="entry about-text">{body}</div>', "contents-row")
             + row('<h2 class="side-label" id="contact">Get in touch</h2>', contact, "contents-row"))
     return layout(title="About", desc="About Atlas, who writes noir, spy fiction, fantasy and comics. Get in touch by email.",
-                  path="/about/", main=main, current="/about/")
+                  path="/about/", main=main, current="/about/", footer_links=False)
 
 
 def page_contact() -> str:
