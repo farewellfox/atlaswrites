@@ -1,10 +1,3 @@
----
-title: Provenance
-author: Pasqually
-meta: The Shrike · Spy Fiction · 2,775 words · July 2026
-description: A Belarusian rail clerk walks into a Western embassy offering the paperwork that could catch a sanctioned economy in a lie. Three services want him. None of them dares touch him first. So the job drifts to the man who belongs to nobody, a freelancer the trade calls the Shrike.
----
-
 Seventy-four percent of Lithuania is Roman Catholic, and so strong is
 their devotion that even the streets are designed to kneel to the
 Almighty.

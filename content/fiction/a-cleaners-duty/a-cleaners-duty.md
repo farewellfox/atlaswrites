@@ -1,10 +1,3 @@
----
-title: A Cleaner's Duty
-author: Pasqually
-meta: Steampunk · Mystery · 13,679 words · March 2026
-description: Three days into a routine sweep of the northern buffer, Thomas Spaulder's and his squad find an outpost stripped clean and a note somebody hid rather than sent.
----
-
 ## Part 1
 
 ### 1

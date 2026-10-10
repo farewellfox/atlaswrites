@@ -1,10 +1,3 @@
----
-title: Undercity Crown — Issue 1: The Descent
-author: Pasqually
-meta: Comic Script · Issue 1 · July 2026
-description: Betrayed, discarded, and back on his feet, ex-Watchman Atlas descends into the Undercity of Strathen with a talking gun and nothing left to lose. The job waiting for him at the bottom pays in the only currency that matters: the name of the man who put him there.
----
-
 # Lettering & Visual Style Notes
 
 **Grim (the gun):** Grim's dialogue always uses a distinct balloon
