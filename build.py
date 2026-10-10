@@ -402,9 +402,12 @@ def all_stories(sections: list[dict]) -> list[dict]:
 # ─────────────────────────── page templates ───────────────────────────
 SITE: dict = {}
 
-ICON_THEME = ('<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">'
+ICON_THEME = ('<svg class="ico-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">'
               '<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z" fill="none" '
-              'stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>')
+              'stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>'
+              '<svg class="ico-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">'
+              '<g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4"/>'
+              '<path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></g></svg>')
 
 
 def layout(*, title: str, desc: str, path: str, main: str, current: str = "",
@@ -419,7 +422,7 @@ def layout(*, title: str, desc: str, path: str, main: str, current: str = "",
     brand_size = " masthead--home" if home else ""
     tagline = f'<p class="tagline">{esc(SITE.get("tagline"))}</p>' if home else ""
     links = (f'<a href="mailto:{esc(SITE.get("email"))}">Email</a><a href="{esc(SITE.get("royal_road"))}" rel="noopener">Royal Road</a>'
-             f'<a href="/feed.xml">RSS feed</a>') if footer_links else ""
+             f'<a href="/feed.xml">RSS feed</a>') if footer_links else f'<span class="footer-note">© {dt.date.today().year} {esc(SITE["title"])}</span>'
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -619,12 +622,12 @@ def page_about() -> str:
         body = smart_html(res.stdout)
     email, rr = esc(SITE.get("email")), esc(SITE.get("royal_road"))
     contact = (f'<ul class="toc-list contact-list">'
-               f'<li class="toc-item toc-item--static"><p class="contact-lead">Questions or notes on a story? An artist interested in Undercity Crown? Email me.</p>'
+               f'<li class="toc-item toc-item--static"><p class="contact-lead">Questions or notes on a story? An artist interested in <a href="/comics/undercity-crown-issue-1/">Undercity Crown</a>? Email me.</p>'
                f'<p class="contact-email"><a href="mailto:{email}">{email}</a>'
                f'<button type="button" class="copy-btn" data-copy="{email}">Copy address</button></p></li>'
-               f'<li class="toc-item"><a class="toc-title" href="{rr}" rel="noopener">Royal Road</a>'
+               f'<li class="toc-item"><a class="toc-title" href="{rr}" rel="noopener">Royal Road</a><span class="toc-go" aria-hidden="true">↗</span>'
                f'<p class="toc-meta"><span>More of my fiction</span></p></li>'
-               f'<li class="toc-item"><a class="toc-title" href="/feed.xml">RSS feed</a>'
+               f'<li class="toc-item"><a class="toc-title" href="/feed.xml">RSS feed</a><span class="toc-go" aria-hidden="true">→</span>'
                f'<p class="toc-meta"><span>New stories as they go up</span></p></li></ul>')
     main = (row('<h1 class="side-label">About</h1>', f'<div class="entry about-text">{body}</div>', "contents-row")
             + row('<h2 class="side-label" id="contact">Get in touch</h2>', contact, "contents-row"))
