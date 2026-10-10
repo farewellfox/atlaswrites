@@ -209,7 +209,6 @@ h3.entry-title { font-size: 1.5rem; }
 .prose {
   font-size: calc(1.125rem * var(--scale));
   line-height: 1.72;
-  hyphens: auto; -webkit-hyphens: auto;
   hanging-punctuation: first;
   overflow-wrap: break-word;
 }
@@ -217,8 +216,8 @@ h3.entry-title { font-size: 1.5rem; }
 .prose em { font-style: italic; }
 .prose blockquote { margin: 1.25em 0 1.25em 1.5em; font-style: italic; }
 
-/* fiction: book paragraphs, indented, no gaps */
-.prose--fiction p + p { text-indent: 1.4em; }
+/* fiction: a clear gap between paragraphs */
+.prose--fiction p { margin: 0 0 1.1em; }
 .prose--fiction .part {
   margin: 3.5em 0 1.6em; font-size: 1.6em; font-weight: 500; font-style: italic; line-height: 1.2;
   letter-spacing: -0.01em;
@@ -251,7 +250,7 @@ h3.entry-title { font-size: 1.5rem; }
 .prose--comics strong { font-weight: 650; }
 
 /* poetry: stanzas, no hyphenation */
-.prose--poetry { hyphens: manual; -webkit-hyphens: manual; line-height: 1.8; }
+.prose--poetry { line-height: 1.8; }
 .prose--poetry p { margin: 0 0 1.5em; }
 .prose--poetry .part { margin: 2.5em 0 1em; font-size: 1.1em; font-style: italic; font-weight: 500; }
 

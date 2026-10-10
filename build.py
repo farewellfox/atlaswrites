@@ -558,17 +558,12 @@ def page_series(series: dict) -> str:
 
 
 def toc_html(toc: list) -> str:
-    if len(toc) < 2 and not (toc and len(toc[0]["chapters"]) > 1):
+    if len(toc) < 2:
         return ""
     items = []
     for t in toc:
         chapters = t["chapters"]
-        sub = ""
-        if chapters and all(c["numeric"] for c in chapters):
-            sub = '<ol class="toc-ch">' + "".join(
-                f'<li><a href="#{c["id"]}" aria-label="{esc(t["label"])}, chapter {esc(c["label"])}">{esc(c["label"])}</a></li>'
-                for c in chapters) + "</ol>"
-        items.append(f'<li><a href="#{t["id"]}">{esc(t["label"])}</a>{sub}</li>')
+        items.append(f'<li><a href="#{t["id"]}">{esc(t["label"])}</a></li>')
     return (f'<details class="toc"><summary>Contents</summary><ol class="toc-parts">{"".join(items)}</ol></details>')
 
 
@@ -582,12 +577,10 @@ def page_story(s: dict) -> str:
     facts.append(month_year(s["published"]))
     if s["revised"] and s["published"] and (s["revised"].year, s["revised"].month) > (s["published"].year, s["published"].month):
         facts.append(f"Revised {month_year(s['revised'])}")
-    facts.append(s.get("status"))
+    if s.get("status") and s["status"].lower() != "complete":
+        facts.append(s["status"])
     facts_html = "".join(f"<li>{esc(f)}</li>" for f in facts if f)
-    tools = ('<div class="tools" role="group" aria-label="Text size">'
-             '<button type="button" data-scale="-1" aria-label="Smaller text">A<span aria-hidden="true">−</span></button>'
-             '<button type="button" data-scale="1" aria-label="Larger text">A<span aria-hidden="true">+</span></button></div>')
-    side = f'<div class="side-sticky">{back}<ul class="side-facts">{facts_html}</ul>{toc_html(s["toc"])}{tools}</div>'
+    side = f'<div class="side-sticky">{back}<ul class="side-facts">{facts_html}</ul>{toc_html(s["toc"])}</div>'
 
     figure = ""
     if s.get("image"):
