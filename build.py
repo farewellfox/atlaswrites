@@ -505,7 +505,9 @@ def toc_entry(item: dict) -> str:
     if item["kind"] == "series":
         kids = ""
         for s in item["stories"]:
-            length = meta([f"<span>{esc(s['length'])}</span>"])
+            st = s.get("status") or ""
+            kid_flag = f'<span class="toc-flag">{esc(st)}</span>' if st and st.lower() != "complete" else ""
+            length = meta([f"<span>{esc(s['length'])}</span>", kid_flag])
             kids += (f'<li class="toc-item toc-item--kid"><a class="toc-title" href="{s["url"]}">'
                      f'{esc(s["title"])}</a>{length}</li>')
         genre = item.get("genres") or item.get("genre")
@@ -537,7 +539,9 @@ def entry_card(item: dict, heading: str = "h2") -> str:
     kids = ""
     if item["kind"] == "series" and item["stories"]:
         kids = "<ol class='entry-kids'>" + "".join(
-            f'<li><a href="{s["url"]}">{esc(s["title"])}</a> <span class="muted">{esc(s["length"])}</span></li>'
+            f'<li><a href="{s["url"]}">{esc(s["title"])}</a> <span class="muted">{esc(s["length"])}</span>'
+            + (f' <span class="toc-flag">{esc(s["status"])}</span>' if s.get("status") and s["status"].lower() != "complete" else "")
+            + '</li>'
             for s in item["stories"]) + "</ol>"
     return (f'<article class="entry"><{heading} class="entry-title"><a href="{item["url"]}">{esc(item["title"])}</a></{heading}>'
             f'<p class="facts-line">{facts_line(item)}</p><div class="entry-blurb">{blurb}</div>{kids}'
@@ -639,6 +643,12 @@ def page_about() -> str:
                   path="/about/", main=main, current="/about/", footer_links=False)
 
 
+def redirect_page(target: str) -> str:
+    return ('<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Moved</title>'
+            f'<link rel="canonical" href="{target}"><meta http-equiv="refresh" content="0; url={target}">'
+            f'</head><body><p>This page has moved to <a href="{target}">{target}</a>.</p></body></html>')
+
+
 def page_contact() -> str:
     """The old /contact/ address now forwards to the About page."""
     return ('<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Contact</title>'
@@ -704,6 +714,8 @@ def build() -> None:
     for s in stories:
         write(s["url"], page_story(s))
         urls.append((s["url"], s["revised"] or s["published"]))
+        for old_url in str(s.get("moved_from") or "").split():   # keeps old links working after a move
+            write("/" + old_url.strip("/") + "/", redirect_page(s["url"]))
     write("/about/", page_about())
     write("/contact/", page_contact())
     urls.append(("/about/", None))
