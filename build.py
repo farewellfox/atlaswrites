@@ -475,7 +475,7 @@ def row(margin: str, text: str, cls: str = "") -> str:
 
 
 def facts_line(item: dict) -> str:
-    bits = [item.get("genres"), item.get("status")]
+    bits = [item.get("genres") or item.get("genre"), item.get("status")]
     if item["kind"] == "series":
         n = len(item["stories"])
         bits.append(f"{n} {'story' if n == 1 else 'stories'}")
