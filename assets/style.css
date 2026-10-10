@@ -287,7 +287,7 @@ h3.entry-title { font-size: 1.5rem; }
 .contact-email a:hover { text-decoration-thickness: 2px; }
 .copy-btn { background: none; border: 1px solid var(--card-edge); border-radius: 6px; padding: .3rem .7rem; min-height: 2.1rem; color: var(--ink); cursor: pointer; font-size: .875rem; }
 .copy-btn:hover { border-color: var(--pencil); }
-.toc-go { position: absolute; right: 1.4rem; top: 50%; transform: translateY(-50%); color: var(--pencil); font-size: 1.15rem; transition: transform .15s, color .15s; }
+.toc-go { position: absolute; right: 1.4rem; top: 50%; transform: translateY(-50%); color: var(--pencil); line-height: 0; transition: transform .15s, color .15s; }
 .toc-item:hover .toc-go { color: var(--ink); transform: translate(2px, -50%); }
 .contact-lead a { position: relative; z-index: 1; }
 .footer-note { color: var(--pencil); }

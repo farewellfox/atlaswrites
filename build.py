@@ -410,6 +410,12 @@ ICON_THEME = ('<svg class="ico-moon" viewBox="0 0 24 24" width="18" height="18" 
               '<path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></g></svg>')
 
 
+ARROW_OUT = ('<svg viewBox="0 0 20 20" width="18" height="18" focusable="false"><path d="M6 14 14 6M7.5 6H14v6.5" '
+             'fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>')
+ARROW_RIGHT = ('<svg viewBox="0 0 20 20" width="18" height="18" focusable="false"><path d="M4 10h11.5M11 5.5 15.5 10 11 14.5" '
+               'fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>')
+
+
 def layout(*, title: str, desc: str, path: str, main: str, current: str = "",
            og_type: str = "website", image: str | None = None, home: bool = False,
            body_class: str = "", footer_links: bool = True) -> str:
@@ -422,7 +428,7 @@ def layout(*, title: str, desc: str, path: str, main: str, current: str = "",
     brand_size = " masthead--home" if home else ""
     tagline = f'<p class="tagline">{esc(SITE.get("tagline"))}</p>' if home else ""
     links = (f'<a href="mailto:{esc(SITE.get("email"))}">Email</a><a href="{esc(SITE.get("royal_road"))}" rel="noopener">Royal Road</a>'
-             f'<a href="/feed.xml">RSS feed</a>') if footer_links else f'<span class="footer-note">© {dt.date.today().year} {esc(SITE["title"])}</span>'
+             if footer_links else f'<span class="footer-note">© {dt.date.today().year} {esc(SITE["title"])}</span>')
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -625,10 +631,8 @@ def page_about() -> str:
                f'<li class="toc-item toc-item--static"><p class="contact-lead">Questions or notes on a story? An artist interested in <a href="/comics/undercity-crown-issue-1/">Undercity Crown</a>? Email me.</p>'
                f'<p class="contact-email"><a href="mailto:{email}">{email}</a>'
                f'<button type="button" class="copy-btn" data-copy="{email}">Copy address</button></p></li>'
-               f'<li class="toc-item"><a class="toc-title" href="{rr}" rel="noopener">Royal Road</a><span class="toc-go" aria-hidden="true">↗</span>'
-               f'<p class="toc-meta"><span>More of my fiction</span></p></li>'
-               f'<li class="toc-item"><a class="toc-title" href="/feed.xml">RSS feed</a><span class="toc-go" aria-hidden="true">→</span>'
-               f'<p class="toc-meta"><span>New stories as they go up</span></p></li></ul>')
+               f'<li class="toc-item"><a class="toc-title" href="{rr}" rel="noopener">Royal Road</a><span class="toc-go" aria-hidden="true">{ARROW_OUT}</span>'
+               f'<p class="toc-meta"><span>More of my fiction</span></p></li></ul>')
     main = (row('<h1 class="side-label">About</h1>', f'<div class="entry about-text">{body}</div>', "contents-row")
             + row('<h2 class="side-label" id="contact">Get in touch</h2>', contact, "contents-row"))
     return layout(title="About", desc="About Atlas, who writes noir, spy fiction, fantasy and comics. Get in touch by email.",
