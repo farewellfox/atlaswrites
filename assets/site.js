@@ -106,3 +106,12 @@
     box.querySelector('.resume-x').addEventListener('click', function () { box.hidden = true; save(key, null); });
   }
 })();
+
+/* "Copy address" button on the About page */
+document.querySelectorAll('[data-copy]').forEach(function (b) {
+  b.addEventListener('click', function () {
+    var done = function () { b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy address'; }, 2000); };
+    if (navigator.clipboard) navigator.clipboard.writeText(b.dataset.copy).then(done, function () { window.prompt('Copy the address:', b.dataset.copy); });
+    else window.prompt('Copy the address:', b.dataset.copy);
+  });
+});

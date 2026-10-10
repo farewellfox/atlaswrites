@@ -42,7 +42,7 @@ WORDS_PER_MINUTE = 230
 TEXT_EXTS = (".docx", ".md", ".markdown")
 IMAGE_EXTS = (".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg")
 NAV = [("Fiction", "/fiction/"), ("Poetry", "/poetry/"), ("Comics", "/comics/"),
-       ("About", "/about/"), ("Contact", "/contact/")]
+       ("About", "/about/")]
 READ_LABEL = {"fiction": "Read the story", "poetry": "Read the poem", "comics": "Read the script"}
 
 warnings: list[str] = []
@@ -486,25 +486,27 @@ def facts_line(item: dict) -> str:
     return "".join(f"<span>{esc(b)}</span>" for b in bits if b)
 
 
-def toc_entry(item: dict, nested: bool = False) -> str:
-    """One line of the home page contents: title, leader dots, length."""
+def toc_entry(item: dict) -> str:
+    """One item on the home page: the title, and one quiet line underneath."""
+    def meta(bits):
+        return '<p class="toc-meta">' + "".join(bits) + "</p>"
+    status = item.get("status") or ""
+    flag = (f'<span class="toc-flag">{esc(status)}</span>'
+            if status and status.lower() not in ("complete", "ongoing series") else "")
     if item["kind"] == "series":
-        kids = "".join(
-            f'<li class="toc-item toc-item--kid"><a class="toc-row" href="{s["url"]}">'
-            f'<span class="toc-no">{esc(s.get("number") or i + 1)}</span>'
-            f'<span class="toc-title">{esc(s["title"])}</span><span class="toc-lead"></span>'
-            f'<span class="toc-len">{esc(s["length"])}</span></a></li>'
-            for i, s in enumerate(item["stories"]))
-        return (f'<li class="toc-item"><a class="toc-row" href="{item["url"]}">'
-                f'<span class="toc-title">{esc(item["title"])}</span><span class="toc-lead"></span>'
-                f'<span class="toc-len">{esc(item.get("status") or "Series")}</span></a>'
-                f'<p class="toc-hook">{esc(item.get("hook"))}</p><ol class="toc-kids">{kids}</ol></li>')
-    flag = (f'<span class="toc-flag">{esc(item["status"])}</span>'
-            if item.get("status") and item["status"].lower() != "complete" else "")
-    return (f'<li class="toc-item"><a class="toc-row" href="{item["url"]}">'
-            f'<span class="toc-title">{esc(item["title"])}</span><span class="toc-lead"></span>'
-            f'<span class="toc-len">{esc(item["length"])}</span></a>'
-            f'<p class="toc-hook">{esc(item.get("hook"))}{flag}</p></li>')
+        kids = ""
+        for s in item["stories"]:
+            length = meta([f"<span>{esc(s['length'])}</span>"])
+            kids += (f'<li class="toc-item toc-item--kid"><a class="toc-title" href="{s["url"]}">'
+                     f'{esc(s["title"])}</a>{length}</li>')
+        genre = item.get("genres") or item.get("genre")
+        bits = [f"<span>{esc(genre)}</span>" if genre else "",
+                f"<span>{esc(status or 'Series')}</span>", flag]
+        return (f'<li class="toc-item"><a class="toc-title" href="{item["url"]}">{esc(item["title"])}</a>'
+                f'{meta(bits)}<ol class="toc-kids">{kids}</ol></li>')
+    bits = [f"<span>{esc(item.get('genres'))}</span>" if item.get("genres") else "",
+            f"<span>{esc(item['length'])}</span>", flag]
+    return f'<li class="toc-item"><a class="toc-title" href="{item["url"]}">{esc(item["title"])}</a>{meta(bits)}</li>'
 
 
 def page_home(sections: list[dict]) -> str:
@@ -515,12 +517,7 @@ def page_home(sections: list[dict]) -> str:
         entries = "".join(toc_entry(i) for i in sec["items"])
         rows.append(row(f'<h2 class="side-label"><a href="{sec["url"]}">{esc(sec["title"])}</a></h2>',
                         f'<ol class="toc-list">{entries}</ol>', "contents-row"))
-    about = (CONTENT / "about.md")
-    intro = ""
-    if about.exists():
-        first = paragraphs(split_frontmatter(about.read_text(encoding="utf-8"))[1])
-        intro = f'<p class="home-about">{esc(first[0])} <a href="/about/">More about me</a></p>' if first else ""
-    main = "\n".join(rows) + row('<h2 class="side-label">About</h2>', intro, "contents-row")
+    main = "\n".join(rows)
     return layout(title=SITE["title"], desc=SITE.get("description", ""), path="/", main=main,
                   home=True, body_class="home")
 
@@ -619,20 +616,24 @@ def page_about() -> str:
         res = subprocess.run(["pandoc", "--from=markdown", "--to=html5", "--wrap=none"],
                              input=split_frontmatter(src.read_text(encoding="utf-8"))[1],
                              capture_output=True, text=True)
-        body = res.stdout
-    text = f'<div class="prose prose--page">{body}</div><p class="entry-link-wrap"><a class="entry-link" href="/contact/">Get in touch</a></p>'
-    main = row('<h1 class="side-label side-label--page">About</h1>', text, "page-row")
-    return layout(title="About", desc="About Atlas, who writes noir, spy fiction, fantasy and comics.",
+        body = smart_html(res.stdout)
+    email, rr = esc(SITE.get("email")), esc(SITE.get("royal_road"))
+    contact = (f'<p class="contact-lead">Questions, notes on a story, or an artist interested in Undercity Crown? Email me.</p>'
+               f'<p class="contact-email"><a href="mailto:{email}">{email}</a>'
+               f'<button type="button" class="copy-btn" data-copy="{email}">Copy address</button></p>'
+               f'<ul class="elsewhere"><li><a href="{rr}" rel="noopener">Royal Road</a> <span>more fiction</span></li>'
+               f'<li><a href="/feed.xml">RSS feed</a> <span>new stories as they go up</span></li></ul>')
+    main = (row('<h1 class="side-label side-label--page">About</h1>', f'<div class="about-text">{body}</div>', "page-row")
+            + row('<h2 class="side-label side-label--page" id="contact">Get in touch</h2>', contact, "page-row"))
+    return layout(title="About", desc="About Atlas, who writes noir, spy fiction, fantasy and comics. Get in touch by email.",
                   path="/about/", main=main, current="/about/")
 
 
 def page_contact() -> str:
-    text = (f'<p class="contact-lead">Questions, notes on a story, or an artist interested in Undercity Crown? Email me.</p>'
-            f'<p class="contact-big"><a href="mailto:{esc(SITE.get("email"))}">{esc(SITE.get("email"))}</a></p>'
-            f'<p>More of my fiction is on <a href="{esc(SITE.get("royal_road"))}" rel="noopener">Royal Road</a>.</p>')
-    main = row('<h1 class="side-label side-label--page">Contact</h1>', text, "page-row")
-    return layout(title="Contact", desc="Get in touch with Atlas by email or find more fiction on Royal Road.",
-                  path="/contact/", main=main, current="/contact/")
+    """The old /contact/ address now forwards to the About page."""
+    return ('<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Contact</title>'
+            '<link rel="canonical" href="/about/#contact"><meta http-equiv="refresh" content="0; url=/about/#contact">'
+            '</head><body><p><a href="/about/#contact">Contact details are on the About page.</a></p></body></html>')
 
 
 def page_404() -> str:
@@ -695,7 +696,7 @@ def build() -> None:
         urls.append((s["url"], s["revised"] or s["published"]))
     write("/about/", page_about())
     write("/contact/", page_contact())
-    urls += [("/about/", None), ("/contact/", None)]
+    urls.append(("/about/", None))
     write("/404.html", page_404())
     write("/feed.xml", feed_xml(stories))
     write("/sitemap.xml", sitemap_xml(urls))
