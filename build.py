@@ -205,6 +205,10 @@ def shape_text(body: str, title: str) -> tuple[str, list]:
     first = HEAD_RE.match(body)
     if first and norm(plain(first.group(3))) == norm(title):
         body = body[first.end():].lstrip()            # don't repeat the title
+    else:                                             # same, when the title is plain text, not a heading
+        para = re.match(r"<p>((?:(?!</p>|<br).)*)</p>", body, re.S)
+        if para and norm(plain(para.group(1))) == norm(title):
+            body = body[para.end():].lstrip()
 
     body = re.sub(r"<hr\s*/?>", BREAK_HTML, body)
     body = re.sub(r"<p>\s*(?:[*#~⁂•◆]\s*){1,5}</p>", BREAK_HTML, body)  # *** or # on its own line
