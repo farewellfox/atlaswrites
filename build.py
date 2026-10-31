@@ -524,14 +524,35 @@ def toc_entry(item: dict) -> str:
     return f'<li class="toc-item"><a class="toc-title" href="{item["url"]}">{esc(item["title"])}</a>{meta(bits)}</li>'
 
 
+def summary(s: dict, limit: int = 160) -> str:
+    """One line for search results and link previews: the blurb, or the hook, or the opening lines."""
+    if s.get("blurb_paras"):
+        return s["blurb_paras"][0]
+    if s.get("hook"):
+        return s["hook"]
+    text = " ".join(plain(re.sub(r"<br\s*/?>|</p>", " / ", s.get("body", ""))).split())
+    text = re.sub(r"(\s/\s)+", " / ", text)
+    return text if len(text) <= limit else text[:limit].rsplit(" ", 1)[0] + "…"
+
+
+def piece_count(sec: dict) -> int:
+    return sum(len(i["stories"]) if i["kind"] == "series" else 1 for i in sec["items"])
+
+
 def page_home(sections: list[dict]) -> str:
+    """The front door: the newest few pieces per section, with a link to the rest."""
     rows = []
     for sec in sections:
         if not sec["items"]:
             continue
-        entries = "".join(toc_entry(i) for i in sec["items"])
+        limit = int(sec.get("home") or 3)
+        entries = "".join(toc_entry(i) for i in sec["items"][:limit])
+        more = ""
+        if len(sec["items"]) > limit:
+            more = (f'<p class="see-all"><a href="{sec["url"]}">All {esc(sec["title"].lower())}</a>'
+                    f' <span>{piece_count(sec)}</span></p>')
         rows.append(row(f'<h2 class="side-label"><a href="{sec["url"]}">{esc(sec["title"])}</a></h2>',
-                        f'<ol class="toc-list">{entries}</ol>', "contents-row"))
+                        f'<ol class="toc-list">{entries}</ol>{more}', "contents-row"))
     main = "\n".join(rows)
     return layout(title=SITE["title"], desc=SITE.get("description", ""), path="/", main=main,
                   home=True, body_class="home")
@@ -552,8 +573,42 @@ def entry_card(item: dict, heading: str = "h2") -> str:
             f'<a class="entry-link" href="{item["url"]}">{label}</a></article>')
 
 
+def list_entry(item: dict, with_year: bool) -> str:
+    """One line on a list-style section page: title, then date and length."""
+    if item["kind"] == "series":
+        return toc_entry(item)
+    d = item["published"]
+    when = (month_year(d) if with_year else d.strftime("%B")) if d else ""
+    st = item.get("status") or ""
+    bits = [when, item.get("length", "")]
+    meta = "".join(f"<span>{esc(b)}</span>" for b in bits if b)
+    if st and st.lower() != "complete":
+        meta += f'<span class="toc-flag">{esc(st)}</span>'
+    return (f'<li class="toc-item"><a class="toc-title" href="{item["url"]}">{esc(item["title"])}</a>'
+            f'<p class="toc-meta">{meta}</p></li>')
+
+
+def section_list(sec: dict) -> str:
+    """Newest first. Year headings appear once there's more than one year to tell apart."""
+    groups: dict = {}
+    for item in sec["items"]:
+        year = item["published"].year if item["published"] else "Undated"
+        groups.setdefault(year, []).append(item)
+    if len(groups) <= 1:
+        return '<ol class="toc-list">' + "".join(list_entry(i, True) for i in sec["items"]) + "</ol>"
+    return "".join(f'<h2 class="year-heading">{year}</h2><ol class="toc-list">'
+                   + "".join(list_entry(i, False) for i in items) + "</ol>"
+                   for year, items in groups.items())
+
+
 def page_section(sec: dict) -> str:
-    entries = "".join(entry_card(i) for i in sec["items"]) or '<p class="muted">Nothing here yet.</p>'
+    style = sec.get("layout") or ("list" if sec["slug"] == "poetry" else "cards")
+    if not sec["items"]:
+        entries = '<p class="muted">Nothing here yet.</p>'
+    elif style == "list":
+        entries = section_list(sec)
+    else:
+        entries = "".join(entry_card(i) for i in sec["items"])
     main = row(f'<h1 class="side-label side-label--page">{esc(sec["title"])}</h1>', entries, "page-row")
     return layout(title=sec["title"], desc=sec.get("description", ""), path=sec["url"], main=main,
                   current=sec["url"])
@@ -621,7 +676,7 @@ def page_story(s: dict) -> str:
             f'<button type="button" class="resume-x" aria-label="Dismiss">×</button></div>'
             f'{figure}{note}<div class="prose prose--{s["kind"]}">{s["body"]}</div>{"".join(end)}')
     main = f'<article class="row story" data-story="{esc(s["url"])}"><aside class="m">{side}</aside><div class="t">{text}</div></article>'
-    desc = (s["blurb_paras"] or [s.get("hook", "")])[0]
+    desc = summary(s)
     return layout(title=s["title"], desc=desc, path=s["url"], main=main, current=sec["url"],
                   og_type="article", image=s.get("image"), body_class="reading")
 
@@ -675,7 +730,7 @@ def feed_xml(stories: list[dict]) -> str:
         when = format_datetime(dt.datetime(d.year, d.month, d.day, 12, tzinfo=dt.timezone.utc))
         items.append(f"<item><title>{esc(s['title'])}</title><link>{base}{s['url']}</link>"
                      f"<guid>{base}{s['url']}</guid><pubDate>{when}</pubDate>"
-                     f"<description>{esc((s['blurb_paras'] or [''])[0])}</description></item>")
+                     f"<description>{esc(summary(s))}</description></item>")
     return (f'<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0"><channel>'
             f"<title>{esc(SITE['title'])}</title><link>{base}/</link>"
             f"<description>{esc(SITE.get('description'))}</description>{''.join(items)}</channel></rss>\n")
