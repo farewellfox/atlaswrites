@@ -211,6 +211,7 @@ h3.entry-title { font-size: 1.5rem; }
 }
 .byline { margin: .7rem 0 0; font-style: italic; color: var(--pencil); font-size: 1.1rem; }
 .story-note { font-style: italic; color: var(--pencil); margin: 0 0 1.75rem; }
+.series-note { margin: 1.5rem 0 0; }
 .story-figure { margin: 0 0 2.5rem; }
 .story-figure img { display: block; width: auto; max-width: 100%; max-height: 42rem; height: auto; margin: 0 auto; border-radius: 3px; }
 .story-figure figcaption { text-align: center; }

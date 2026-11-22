@@ -43,6 +43,7 @@ TEXT_EXTS = (".docx", ".md", ".markdown")
 IMAGE_EXTS = (".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg")
 NAV = [("Fiction", "/fiction/"), ("Poetry", "/poetry/"), ("Comics", "/comics/"),
        ("About", "/about/")]
+UNIT = {"comics": ("issue", "issues"), "poetry": ("poem", "poems")}   # what a series is made of
 READ_LABEL = {"fiction": "Read the story", "poetry": "Read the poem", "comics": "Read the script"}
 
 warnings: list[str] = []
@@ -324,7 +325,7 @@ def load_story(folder: Path, section: dict, url: str, series: dict | None) -> di
     if not meta.get("title"):
         warn(f"{where}: story.yml has no title.")
         meta["title"] = folder.name.replace("-", " ").title()
-    for field in ("title", "hook", "blurb", "note", "image_caption"):
+    for field in ("title", "short_title", "hook", "blurb", "note", "image_caption"):
         if meta.get(field):
             meta[field] = smart_quotes(meta[field])
     body, toc = shape_text(smart_html(raw), meta["title"])
@@ -357,7 +358,7 @@ def load_story(folder: Path, section: dict, url: str, series: dict | None) -> di
 
 def load_series(folder: Path, section: dict) -> dict:
     meta = read_meta(folder / "series.yml")
-    for field in ("title", "hook", "blurb"):
+    for field in ("title", "hook", "blurb", "note"):
         if meta.get(field):
             meta[field] = smart_quotes(meta[field])
     url = f"/{section['slug']}/{folder.name}/"
@@ -487,13 +488,18 @@ def row(margin: str, text: str, cls: str = "") -> str:
     return f'<div class="row {cls}"><div class="m">{margin}</div><div class="t">{text}</div></div>'
 
 
+def list_title(item: dict) -> str:
+    return item.get("short_title") or item["title"]
+
+
 def facts_line(item: dict) -> str:
     bits = [item.get("genres") or item.get("genre"), item.get("status")]
     if item["kind"] == "series":
         n = len(item["stories"])
-        bits.append(f"{n} {'story' if n == 1 else 'stories'}")
+        one, many = UNIT.get(item["section"]["slug"], ("story", "stories"))
+        bits.append(f"{n} {one if n == 1 else many}")
     else:
-        if item["kind"] != "poetry":
+        if item["kind"] not in ("poetry", "comics"):
             bits.append(f"{item['words']:,} words")
         bits.append(month_year(item["published"]))
     return "".join(f"<span>{esc(b)}</span>" for b in bits if b)
@@ -513,7 +519,7 @@ def toc_entry(item: dict) -> str:
             kid_flag = f'<span class="toc-flag">{esc(st)}</span>' if st and st.lower() != "complete" else ""
             length = meta([f"<span>{esc(s['length'])}</span>", kid_flag])
             kids += (f'<li class="toc-item toc-item--kid"><a class="toc-title" href="{s["url"]}">'
-                     f'{esc(s["title"])}</a>{length}</li>')
+                     f'{esc(list_title(s))}</a>{length}</li>')
         genre = item.get("genres") or item.get("genre")
         bits = [f"<span>{esc(genre)}</span>" if genre else "",
                 f"<span>{esc(status or 'Series')}</span>", flag]
@@ -564,11 +570,12 @@ def entry_card(item: dict, heading: str = "h2") -> str:
     kids = ""
     if item["kind"] == "series" and item["stories"]:
         kids = "<ol class='entry-kids'>" + "".join(
-            f'<li><a href="{s["url"]}">{esc(s["title"])}</a> <span class="muted">{esc(s["length"])}</span>'
+            f'<li><a href="{s["url"]}">{esc(list_title(s))}</a> <span class="muted">{esc(s["length"])}</span>'
             + (f' <span class="toc-flag">{esc(s["status"])}</span>' if s.get("status") and s["status"].lower() != "complete" else "")
             + '</li>'
             for s in item["stories"]) + "</ol>"
-    return (f'<article class="entry"><{heading} class="entry-title"><a href="{item["url"]}">{esc(item["title"])}</a></{heading}>'
+    name = list_title(item) if item.get("series") else item["title"]
+    return (f'<article class="entry"><{heading} class="entry-title"><a href="{item["url"]}">{esc(name)}</a></{heading}>'
             f'<p class="facts-line">{facts_line(item)}</p><div class="entry-blurb">{blurb}</div>{kids}'
             f'<a class="entry-link" href="{item["url"]}">{label}</a></article>')
 
@@ -620,8 +627,10 @@ def page_series(series: dict) -> str:
     entries = "".join(entry_card(s, "h3") for s in series["stories"])
     side = (f'<a class="back" href="{sec["url"]}">All {esc(sec["title"].lower())}</a>'
             f'<p class="side-facts">{esc(series.get("status"))}</p>')
-    text = (f'<h1 class="story-title">{esc(series["title"])}</h1><div class="series-blurb">{blurb}</div>'
-            f'<h2 class="list-heading">Stories in the series</h2>{entries}')
+    note = f'<p class="story-note series-note">{esc(series["note"])}</p>' if series.get("note") else ""
+    many = UNIT.get(sec["slug"], ("story", "stories"))[1]
+    text = (f'<h1 class="story-title">{esc(series["title"])}</h1><div class="series-blurb">{blurb}</div>{note}'
+            f'<h2 class="list-heading">{many.capitalize()} in the series</h2>{entries}')
     return layout(title=series["title"], desc=(series["blurb_paras"] or [""])[0], path=series["url"],
                   main=row(side, text, "page-row"), current=sec["url"])
 
@@ -691,7 +700,7 @@ def page_about() -> str:
         body = smart_html(res.stdout)
     email, rr = esc(SITE.get("email")), esc(SITE.get("royal_road"))
     contact = (f'<ul class="toc-list contact-list">'
-               f'<li class="toc-item toc-item--static"><p class="contact-lead">Questions or notes on a story? An artist interested in <a href="/comics/undercity-crown-issue-1/">Undercity Crown</a>? Email me.</p>'
+               f'<li class="toc-item toc-item--static"><p class="contact-lead">{esc(smart_quotes(SITE.get("contact_note") or "Questions or notes on a story? Email me."))}</p>'
                f'<p class="contact-email"><a href="mailto:{email}">{email}</a>'
                f'<button type="button" class="copy-btn" data-copy="{email}">Copy address</button></p></li>'
                f'<li class="toc-item"><a class="toc-title" href="{rr}" rel="noopener">Royal Road</a><span class="toc-go" aria-hidden="true">{ARROW_OUT}</span>'
